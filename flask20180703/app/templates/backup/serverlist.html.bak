@@ -1,0 +1,391 @@
+<html>
+<body>
+<!--引用面包导航模板添加下面面包导航内容-->
+{% extends "base.html" %}
+{% block content %}
+
+<!--引用面包导航模板添加下面面包导航内容-->
+<div class="col-sm-12">
+<a id="addserver" class="btn btn-sm btn-primary" style="float:right">添加服务器</a> 
+<br />
+<br />
+<!-- 服务器信息列表-->
+<table class="table table-striped table-bordered table-hover " id="editable">
+<thead>
+    <tr>
+        <th class="text-center">IP地址</th>
+        <th class="text-center">MAC地址</th>
+        <th class="text-center">用户名</th>
+        <th class="text-center">密码</th>
+        <th class="text-center">端口</th>
+        <th class="text-center">机房</th>
+        <th class="text-center">机柜</th>
+        <th class="text-center">服务器品牌</th>
+        <th class="text-center">CPU</th>
+        <th class="text-center">内存</th>
+        <th class="text-center">硬盘</th>
+        <th class="text-center">操作系统</th>
+        <th class="text-center">操作</th>
+    </tr>
+</thead>
+<tbody>
+{% for i in result['msg'] %}   
+        <tr class="gradeX">
+                <td class="text-center">{{ i.ip}}</td>
+                <td class="text-center">{{ i.mac}}</td>
+                <td class="text-center">{{ i.username}}</td>
+                <td class="text-center">{{ i.password}}</td>
+                <td class="text-center">{{ i.port}}</td>
+                <td class="text-center">{{ i.idc}}</td>
+                <td class="text-center">{{ i.cabinet}}</td>
+                <td class="text-center">{{ i.brand}}</td>
+                <td class="text-center">{{ i.cpu}}</td>
+                <td class="text-center">{{ i.memory}}</td>
+                <td class="text-center">{{ i.disk}}</td>
+                <td class="text-center">{{ i.system_type}}</td>
+                <td class="text-center">
+                    <button data-id="{{ i.id }}" class="btn btn-xs btn-info update">编辑</button>
+                    <button data-id="{{ i.id }}" class="btn btn-xs btn-danger del ">删除</button>
+                </td>
+            </td>
+         </tr>
+{% endfor %} 
+ </tbody>
+</table>
+<!-- 服务器信息列表end-->
+
+<!--更新服务器信息模态窗-->
+<div class="modal fade"  id ="updateModal">   
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title">更新服务器信息</h4> 
+      </div>
+      <div class="modal-body">
+        <p hidden id="uperrorMsg" class="text-danger" style="color:red"></p> <!-- for error msg-->
+            <form id="updateForm" class="form-horizontal nice-validator n-yellow" novalidate="novalidate">
+            <input type="hidden" id='id' name="id"><!--update need id-->
+            <div class="hr-line-dashed"></div>
+            <div class="form-group">
+                <label for="ip" class="col-sm-2 control-label">IP<span class="red-fonts">*</span></label>
+                <div class="col-sm-8">
+                    <input id="ip" name="ip" value="{{ result.ip }}" placeholder="ip" class="form-control">
+                </div>
+            </div><!--serverip-->
+            <div class="hr-line-dashed"></div>
+            <div class="form-group">
+                <label for="mac" class="col-sm-2 control-label">MAC<span class="red-fonts">*</span></label>
+                <div class="col-sm-8">
+                    <input id="mac" name="mac" value="{{ result.mac }}" placeholder="mac" class="form-control">
+                </div>
+            </div><!--server mac-->
+            <div class="hr-line-dashed"></div>
+            <div class="form-group">
+                <label for="username" class="col-sm-2 control-label">用户名<span class="red-fonts">*</span></label>
+                <div class="col-sm-8">
+                    <input id="username" name="username" value="{{ result.username}}" type="text" placeholder="username" class="form-control">
+                </div>
+            </div><!--server username-->
+            <div class="hr-line-dashed"></div>
+            <div class="form-group">
+                <label for="password" class="col-sm-2 control-label">密码<span class="red-fonts">*</span></label>
+                <div class="col-sm-8">
+                    <input id="password" name="password" value="{{ result.password}}" type="text" placeholder="password" class="form-control">
+                </div>
+            </div><!--server password-->
+            <div class="hr-line-dashed"></div>
+            <div class="form-group">
+                <label for="port" class="col-sm-2 control-label">端口<span class="red-fonts">*</span></label>
+                <div class="col-sm-8">
+                    <input id="port" name="port" value="{{ result.port}}" type="text" placeholder="port" class="form-control">
+                </div>
+            </div><!--server port-->
+            <div class="hr-line-dashed"></div>
+            <div class="form-group">
+                <label for="idc" class="col-sm-2 control-label">机房<span class="red-fonts">*</span></label>
+                <div class="col-sm-8">
+                    <input id="idc" name="idc" value="{{ result.idc}}" type="text" placeholder="idc" class="form-control">
+                </div>
+            </div><!--server idc-->
+            <div class="hr-line-dashed"></div>
+            <div class="form-group">
+                <label for="cabinet" class="col-sm-2 control-label">机柜<span class="red-fonts">*</span></label>
+                <div class="col-sm-8">
+                    <input id="cabinet" name="cabinet" value="{{ result.cabinet}}" type="text" placeholder="cabinet" class="form-control">
+                </div>
+            </div><!--server cabinet-->
+            <div class="hr-line-dashed"></div>
+            <div class="form-group">
+                <label for="brand" class="col-sm-2 control-label">服务器产商<span class="red-fonts">*</span></label>
+                <div class="col-sm-8">
+                    <input id="brand" name="brand" value="{{ result.brand}}" type="text" placeholder="brand" class="form-control">
+                </div>
+            </div><!--server brand-->
+            <div class="hr-line-dashed"></div>
+            <div class="form-group">
+                <label for="cpu" class="col-sm-2 control-label">CPU<span class="red-fonts">*</span></label>
+                <div class="col-sm-8">
+                    <input id="cpu" name="cpu" value="{{ result.cpu}}" type="text" placeholder="cpu" class="form-control">
+                </div>
+            </div><!--server CPU-->
+            <div class="hr-line-dashed"></div>
+            <div class="form-group">
+                <label for="memory" class="col-sm-2 control-label">内存<span class="red-fonts">*</span></label>
+                <div class="col-sm-8">
+                    <input id="memory" name="memory" value="{{ result.memory}}" type="text" placeholder="memory" class="form-control">
+                </div>
+            </div><!--server memory-->
+            <div class="hr-line-dashed"></div>
+            <div class="form-group">
+                <label for="disk" class="col-sm-2 control-label">硬盘<span class="red-fonts">*</span></label>
+                <div class="col-sm-8">
+                    <input id="disk" name="disk" value="{{ result.disk}}" type="text" placeholder="disk" class="form-control">
+                </div>
+            </div><!--server disk-->
+            <div class="hr-line-dashed"></div>
+            <div class="form-group">
+                <label for="system_type" class="col-sm-2 control-label">操作系统<span class="red-fonts">*</span></label>
+                <div class="col-sm-8">
+                    <input id="system_type" name="system_type" value="{{ result.system_type}}" type="text" placeholder="system_type" class="form-control">
+                </div>
+            </div><!--server system_type-->
+        <div class="hr-line-dashed"></div>
+        <div class="form-group">
+            <div class="modal-footer">
+                 <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" id="updatebtn">确认</button>
+            </div>
+        </div> <!--button-->
+        </form> <!--form-->
+      </div> <!--modal-body-->
+
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal --> 
+
+<!--添加服务器态窗-->
+<div class="modal fade"  id ="addserverModal">   
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title">添加服务器信息</h4> 
+      </div>
+      <div class="modal-body">
+        <p hidden id="uperrorMsg" class="text-danger" style="color:red"></p> <!-- for error msg-->
+            <form id="addserverForm" class="form-horizontal nice-validator n-yellow" novalidate="novalidate">
+            <div class="hr-line-dashed"></div>
+            <div class="form-group">
+                <label for="ip" class="col-sm-2 control-label">IP<span class="red-fonts">*</span></label>
+                <div class="col-sm-8">
+                    <input id="ip" name="ip" value="{{ result.ip }}" placeholder="ip" class="form-control">
+                </div>
+            </div><!--serverip-->
+            <div class="hr-line-dashed"></div>
+            <div class="form-group">
+                <label for="mac" class="col-sm-2 control-label">MAC<span class="red-fonts">*</span></label>
+                <div class="col-sm-8">
+                    <input id="mac" name="mac" value="{{ result.mac }}" placeholder="mac" class="form-control">
+                </div>
+            </div><!--server mac-->
+            <div class="hr-line-dashed"></div>
+            <div class="form-group">
+                <label for="username" class="col-sm-2 control-label">用户名<span class="red-fonts">*</span></label>
+                <div class="col-sm-8">
+                    <input id="username" name="username" value="{{ result.username}}" type="text" placeholder="username" class="form-control">
+                </div>
+            </div><!--server username-->
+            <div class="hr-line-dashed"></div>
+            <div class="form-group">
+                <label for="password" class="col-sm-2 control-label">密码<span class="red-fonts">*</span></label>
+                <div class="col-sm-8">
+                    <input id="password" name="password" value="{{ result.password}}" type="text" placeholder="password" class="form-control">
+                </div>
+            </div><!--server password-->
+            <div class="hr-line-dashed"></div>
+            <div class="form-group">
+                <label for="port" class="col-sm-2 control-label">端口<span class="red-fonts">*</span></label>
+                <div class="col-sm-8">
+                    <input id="port" name="port" value="{{ result.port}}" type="text" placeholder="port" class="form-control">
+                </div>
+            </div><!--server port-->
+            <div class="hr-line-dashed"></div>
+            <div class="form-group">
+                <label for="idc" class="col-sm-2 control-label">机房<span class="red-fonts">*</span></label>
+                <div class="col-sm-8">
+                    <input id="idc" name="idc" value="{{ result.idc}}" type="text" placeholder="idc" class="form-control">
+                </div>
+            </div><!--server idc-->
+            <div class="hr-line-dashed"></div>
+            <div class="form-group">
+                <label for="cabinet" class="col-sm-2 control-label">机柜<span class="red-fonts">*</span></label>
+                <div class="col-sm-8">
+                    <input id="cabinet" name="cabinet" value="{{ result.cabinet}}" type="text" placeholder="cabinet" class="form-control">
+                </div>
+            </div><!--server cabinet-->
+            <div class="hr-line-dashed"></div>
+            <div class="form-group">
+                <label for="brand" class="col-sm-2 control-label">服务器产商<span class="red-fonts">*</span></label>
+                <div class="col-sm-8">
+                    <input id="brand" name="brand" value="{{ result.brand}}" type="text" placeholder="brand" class="form-control">
+                </div>
+            </div><!--server brand-->
+            <div class="hr-line-dashed"></div>
+            <div class="form-group">
+                <label for="cpu" class="col-sm-2 control-label">CPU<span class="red-fonts">*</span></label>
+                <div class="col-sm-8">
+                    <input id="cpu" name="cpu" value="{{ result.cpu}}" type="text" placeholder="cpu" class="form-control">
+                </div>
+            </div><!--server CPU-->
+            <div class="hr-line-dashed"></div>
+            <div class="form-group">
+                <label for="memory" class="col-sm-2 control-label">内存<span class="red-fonts">*</span></label>
+                <div class="col-sm-8">
+                    <input id="memory" name="memory" value="{{ result.memory}}" type="text" placeholder="memory" class="form-control">
+                </div>
+            </div><!--server memory-->
+            <div class="hr-line-dashed"></div>
+            <div class="form-group">
+                <label for="disk" class="col-sm-2 control-label">硬盘<span class="red-fonts">*</span></label>
+                <div class="col-sm-8">
+                    <input id="disk" name="disk" value="{{ result.disk}}" type="text" placeholder="disk" class="form-control">
+                </div>
+            </div><!--server disk-->
+            <div class="hr-line-dashed"></div>
+            <div class="form-group">
+                <label for="system_type" class="col-sm-2 control-label">操作系统<span class="red-fonts">*</span></label>
+                <div class="col-sm-8">
+                    <input id="system_type" name="system_type" value="{{ result.system_type}}" type="text" placeholder="system_type" class="form-control">
+                </div>
+            </div><!--server system_type-->
+        <div class="hr-line-dashed"></div>
+        <div class="form-group">
+            <div class="modal-footer">
+                 <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" id="addserverbtn">确认</button>
+            </div>
+        </div> <!--button-->
+        </form> <!--addserverform-->
+      </div> <!--modal-body-->
+
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal --> 
+
+<script>
+
+$('#editable').DataTable({
+        "bDestroy":true, //加上这个，一旦datatable的数据有增加或者删除，会销毁原有的，重新获取
+        "language": {
+                "lengthMenu": "每页 _MENU_ 条记录",
+                "zeroRecords": "没有找到记录",
+                "sInfo": "第 _PAGE_ 页 ( 总共 _PAGES_ 页 ),显示第 _START_ 至 _END_ 项(总共 _TOTAL_ 项)",
+                "infoEmpty": "无记录",
+                "infoFiltered": "(从 _MAX_ 条记录过滤)",
+                "sSearch": "搜索:",
+                "oPaginate": {
+                "sFirst": "首页",
+                "sPrevious": "上一页",
+                "sNext": "下一页",
+                "sLast": "末页"
+                } 
+        },
+        "order": [[ 1, "asc" ]] 
+});
+
+// 点击更新按钮，获取id，从逻辑端查出对应的数据，弹出模态窗渲染数据
+$(".update").click(function(){   
+    $('#updateModal').modal('show')
+    var id=$(this).attr("data-id")
+    $.getJSON("/serverinfo/",{'id':id},function(result){
+            console.log(result);
+            $("#ip").val(result["ip"]);
+            $("#mac").val(result["mac"]);
+            $("#username").val(result["username"]);
+            $("#password").val(result["password"]);
+            $("#port").val(result["port"]);
+            $("#idc").val(result["idc"]);
+            $("#cabinet").val(result["cabinet"]);
+            $("#brand").val(result["brand"]);
+            $("#cpu").val(result["cpu"]);
+            $("#memory").val(result["memory"]);
+            $("#disk").val(result["disk"]);
+            $("#system_type").val(result["system_disk"]);
+            $('#updateModal').modal('show')
+        })
+})
+
+// 更新数据
+$("#updatebtn").click(function(){
+$.post("/serverupdate/",$("#updateForm").serialize(),function(result) {
+    data=JSON.parse(result)
+    if(data["code"]==0){
+		swal({ 
+                        title: "更新成功", 
+                        text: data['result'],   
+                        type: "success",   
+                        confirmButtonText: "确定"                                                                                     },function(){               
+                         location.href="/userlist/"
+                         location.reload()
+                        });
+    		}else{
+ 			swal("MY GOD","update error","error");
+    		}
+    	})
+    	return false;
+})
+//添加服务器模态窗
+$("#addserver").on('click',function(){
+    $('#addserverModal').modal('show')  
+})
+// 添加服务器
+$("#addserverbtn").click(function(){
+     var str = $('#addserverForm').serialize()
+           console.log(str)
+      $.post("/serveradd/",str,function(result){
+           console.log(result)
+           data=JSON.parse(result)
+           console.log(data)
+           if (data['code']==0){
+                swal({ 
+                title: "添加成功", 
+                text: data['result'],   
+                type: "success",   
+	        confirmButtonText: "确定"                                                                                      },function(){               
+                location.href="/serverlist/"
+              });
+                }else{ 
+                        swal("MY GOD",data['msg'],"error");
+                }
+              }); 
+                return false
+        });  
+
+/*删除服务器*/
+$(".del").click(function(){
+	if(confirm("是否确认删除？")){
+                var id = $(this).attr('data-id')
+		console.log(id)
+        var url = "/serverdelete?id="+id
+	$.getJSON(url,function(data){
+          	if (data['code']==0){
+          	  	swal({ 
+                	title: "删除成功", 
+                	text: data['result'],   
+                	type: "success",   
+                	confirmButtonText: "确定"                                                                                      },function(){               
+                 	 location.href="/serverlist/"
+			 location.reload()
+              		});
+          	}else{ 
+            		swal("MY GOD",data['errmsg'],"error");
+             	}
+     	})	
+	}
+})   
+</script>
+
+{% endblock%}
+<!--引用面包导航模板添加下面面包导航内容-->
+</body></html>

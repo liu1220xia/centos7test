@@ -1,0 +1,146 @@
+<html>
+<body>
+{% extends "base.html" %}
+{% block title%}
+             <a href="/serverlist/">服务器列表</a>
+{% endblock%}
+{% block content%}
+
+<!--添加服务器页面-->
+<h5>添加服务器</h5>
+<p hidden id="uperrorMsg" class="text-danger" style="color:red"></p> <!-- for error msg-->
+<form id="addserverForm" class="form-horizontal nice-validator n-yellow" novalidate="novalidate">
+	    <div class="hr-line-dashed"></div>
+       	    <div class="form-group">
+            <label for="ip" class="col-sm-1 control-label">IP<span class="red-fonts">*</span></label>
+                <div class="col-sm-8">
+                    <input id="ip" name="ip"  placeholder="ip" class="form-control">
+                </div>
+            </div><!--serverip-->
+            <div class="form-group">
+                <label for="mac" class="col-sm-1 control-label">MAC<span class="red-fonts">*</span></label>
+                <div class="col-sm-8">
+                    <input id="mac" name="mac"  placeholder="mac" class="form-control">
+                </div>
+            </div><!--server mac-->
+            <div class="form-group">
+                <label for="username" class="col-sm-1 control-label">用户名<span class="red-fonts">*</span></label>
+                <div class="col-sm-8">
+                    <input id="username" name="username"  type="text" placeholder="username" class="form-control">
+                </div>
+            </div><!--server username-->
+            <div class="form-group">
+                <label for="password" class="col-sm-1 control-label">密码<span class="red-fonts">*</span></label>
+                <div class="col-sm-8">
+                    <input id="password" name="password"  type="text" placeholder="password" class="form-control">
+                </div>
+            </div><!--server password-->
+            <div class="form-group">
+                <label for="port" class="col-sm-1 control-label">端口<span class="red-fonts">*</span></label>
+                <div class="col-sm-8">
+                    <input id="port" name="port"  type="text" placeholder="port" class="form-control">
+                </div>
+            </div><!--server port-->
+            <div class="form-group">
+                <label for="idc" class="col-sm-1 control-label">机房<span class="red-fonts">*</span></label>
+                <div class="col-sm-8">
+                    <select id="idc_name" name="idc"  type="text" placeholder="idc" class="form-control"></select>
+                </div>
+            </div><!--server idc-->
+            <div class="form-group">
+                <label for="cabinet" class="col-sm-1 control-label">机柜<span class="red-fonts">*</span></label>
+                <div class="col-sm-8">
+                    <select id="cabinet_name" name="cabinet"  type="text" placeholder="cabinet" class="form-control"></select>
+                </div>
+            </div><!--server cabinet-->
+            <div class="form-group">
+                <label for="brand" class="col-sm-1 control-label">服务器产商<span class="red-fonts">*</span></label>
+                <div class="col-sm-8">
+                    <input id="brand" name="brand"  type="text" placeholder="brand" class="form-control">
+                </div>
+            </div><!--server brand-->
+            <div class="form-group">
+                <label for="cpu" class="col-sm-1 control-label">CPU<span class="red-fonts">*</span></label>
+                <div class="col-sm-8">
+                    <input id="cpu" name="cpu"  type="text" placeholder="cpu" class="form-control">
+                </div>
+            </div><!--server CPU-->
+            <div class="form-group">
+                <label for="memory" class="col-sm-1 control-label">内存<span class="red-fonts">*</span></label>
+                <div class="col-sm-8">
+                    <input id="memory" name="memory"  type="text" placeholder="memory" class="form-control">
+                </div>
+            </div><!--server memory-->
+            <div class="form-group">
+                <label for="disk" class="col-sm-1 control-label">硬盘<span class="red-fonts">*</span></label>
+                <div class="col-sm-8">
+                    <input id="disk" name="disk"  type="text" placeholder="disk" class="form-control">
+                </div>
+            </div><!--server disk-->
+            <div class="form-group">
+                <label for="system_type" class="col-sm-1 control-label">操作系统<span class="red-fonts">*</span></label>
+                <div class="col-sm-8">
+                    <input id="system_type" name="system_type"  type="text" placeholder="system_type" class="form-control">
+                </div>
+            </div><!--server system_type-->
+       	    <div class="form-group">
+		<div class="col-sm -6 col-sm-offset-2">	
+			<button class="btn btn-white" type="reset">取消</button>
+        	        <button  id="submitbtn" type="button" class="btn btn-primary">确认</button>
+        	</div>
+       	    </div> <!--button-->
+	    <div class="hr-line-dashed"></div>
+ </form> <!--form-->
+
+<!--script-->
+<script>
+// 添加服务器模态窗获取机房信息下拉菜单
+$.getJSON('/idcdata/',function(res){
+          console.log(res)
+          var selectstr=''
+          $.each(res,function(i,v){
+           selectstr+='<option value="'+v[0]+'">'+v[0]+'</option>'
+          })
+         console.log(selectstr)
+         $('#idc_name').html(selectstr)
+          })
+
+// 添服务器模态窗获取机柜信息下拉菜单
+$.getJSON('/cabinetdata/',function(res){
+          console.log(res)
+          var selectstr=''
+          $.each(res,function(i,v){
+           selectstr+='<option value="'+v[0]+'">'+v[0]+'</option>'
+          })
+         console.log(selectstr)
+         $('#cabinet_name').html(selectstr)
+          })
+
+// 添加服务器信息
+$("#submitbtn").click(function(){
+     var str = $('#addserverForm').serialize()
+           console.log(str)
+      $.post("/serveradd/",str,function(result){
+           console.log(result)
+           data=JSON.parse(result)
+           console.log(data)
+           if (data['code']==0){
+                swal({
+                title: "添加成功",
+                text: data['result'],
+                type: "success",
+                confirmButtonText: "确定"                                                                                      },function(){
+                location.href="/serverlist/"
+              });
+                }else{
+                        swal("MY GOD",data['msg'],"error");
+                }
+              });
+                return false
+        });
+</script> <!--js end-->
+
+
+{% endblock %}
+</body>
+</html>

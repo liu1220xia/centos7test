@@ -1,0 +1,75 @@
+#!/bin/env python
+#coding=utf-8
+
+import MySQLdb as mysql
+import config
+import utils
+#conn=mysql.connect(host='127.0.0.1',user='root',passwd='piptest',db='liuyang',port=6666,charset='utf8')
+conn = mysql.connect(config.host,config.user,config.password,config.db,config.port,charset="utf8")
+conn.autocommit(True)
+cur = conn.cursor()
+
+
+def insert(table,field,user_dict):
+	field = ['username','password','age','phone','email','role'] 
+	sql = "insert into %s (%s) values (%s)"%(table,','.join(field),','.join(['"%s"' % user_dict[x] for x in field]))
+	utils.WriteLog('sql').info("insert:%s" % sql)
+	res = cur.execute(sql)
+	if res:
+		result = {'code':0,'msg':'insert ok'}
+	else:
+		result = {'code':1,'msg':'insert fail'}
+	return result
+
+
+def getone(table,field,user_dict):
+	if user_dict.has_key('username'):
+		sql = 'select * from %s where username="%s";'%(table,user_dict['username'])
+	else:
+		sql = 'select * from %s where id ="%s"'%(table,user_dict['id'])
+	utils.WriteLog('sql').info("getone:%s" % sql)
+	cur.execute(sql)
+	res = cur.fetchone()
+	if res:
+		data = {k:res[i] for i,k in enumerate(field)}
+		result = {'code':0,'msg':data}
+	else:
+		result = {'code':1,'errmsg':'data is null'}
+	return result
+
+def alllist(table,field):
+	sql = 'select * from %s;'%(table)
+	utils.WriteLog('sql').info("alllist:%s" % sql)
+	cur.execute(sql)
+	res = cur.fetchall()
+	if res:
+		data = [{k:row[i] for i,k in enumerate(field)} for row in res]
+		result = {'code':0,'msg':data}
+	else:
+		result={'code':1,'msg':'data is null'}
+	return result
+
+def modify(table,user_dict): 
+    conditions = ["%s='%s'" % (k,user_dict[k]) for k in user_dict]
+    sql = "update %s set %s where id=%s;" %(table,','.join(conditions),user_dict['id'])
+    utils.WriteLog('sql').info("modify:%s" % sql)
+    print sql 
+    res = cur.execute(sql)
+    if res :
+        result = {'code':0,'msg':'update ok'}
+    else:
+        result = {'code':1,'errmsg':'update fail'}
+    return result 
+
+def deleteuser(table,user_dict):
+	sql = 'delete from %s where id="%s";'%(table,user_dict['id'])
+    	utils.WriteLog('sql').info("delete:%s" % sql)
+	res = cur.execute(sql)
+	if res:
+		result = {'code':0,'msg':'delete ok'}
+	else:
+		result = {'code':1,'msg':'data is null'}
+	return result
+
+cur.close
+conn.close

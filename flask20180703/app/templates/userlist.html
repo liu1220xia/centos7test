@@ -1,0 +1,309 @@
+<html>
+<body>
+<!--引用面包导航模板添加下面面包导航内容-->
+{% extends "base.html" %}
+{% block title %}
+             <a href="/userlist/">用户列表</a>
+{% endblock %}
+{% block content %}
+
+<!--引用面包导航模板添加下面面包导航内容-->
+
+<div class="col-sm-12">
+<a id="adduser" class="btn btn-sm btn-primary" style="float:right"> 添加用户</a> 
+<br />
+<br />
+<table class="table table-striped table-bordered table-hover " id="editable">
+<thead>
+    <tr>
+        <th class="text-center">用户名</th>
+        <th class="text-center">密码</th>
+        <th class="text-center">年龄</th>
+        <th class="text-center">电话</th>
+        <th class="text-center">Email</th>
+        <th class="text-center">角色</th>
+        <th class="text-center">操作</th>
+    </tr>
+</thead>
+<tbody>
+{% for i in result['msg'] %}   
+        <tr class="gradeX">
+                <td class="text-center">{{ i.username}}</td>
+                <td class="text-center">{{ i.password}}</td>
+                <td class="text-center">{{ i.age}}</td>
+                <td class="text-center">{{ i.phone}}</td>
+                <td class="text-center">{{ i.email}}</td>
+              	<td class="text-center">{% if i.role == 0 %} 管理员 {% elif i.role == 1 %}用户{%endif%} </td>
+                <td class="text-center">
+                    <button data-id="{{ i.id }}" class="btn btn-xs btn-info update">编辑</button>
+                    <button data-id="{{ i.id }}" class="btn btn-xs btn-danger del ">删除</button>
+                </td>
+            </td>
+         </tr>
+{% endfor %} 
+ </tbody>
+</table>
+
+<!--更新模态窗-->
+<div class="modal fade"  id ="updateModal">   
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title">更新用户信息</h4> 
+      </div>
+      <div class="modal-body">
+        <p hidden id="uperrorMsg" class="text-danger" style="color:red"></p> <!-- for error msg-->
+            <form id="updateForm" class="form-horizontal nice-validator n-yellow" novalidate="novalidate">
+            <input type="hidden" id='id' name="id"><!--update need id-->
+            <div class="form-group">
+                <label for="username" class="col-sm-2 control-label">用户名<span class="red-fonts">*</span></label>
+                <div class="col-sm-8">
+                    <input id="username" name="username" value="{{ result.username }}"  type="text" class="form-control" readonly="">
+                </div>
+            </div><!--username-->
+            <div class="hr-line-dashed"></div>
+            <div class="form-group">
+                <label for="age" class="col-sm-2 control-label">年龄<span class="red-fonts">*</span></label>
+                <div class="col-sm-8">
+                    <input id="age" name="age" value="{{ result.age }}" placeholder="age" class="form-control">
+                </div>
+            </div><!--mobile-->
+            <div class="hr-line-dashed"></div>
+            <div class="form-group">
+                <label for="phone" class="col-sm-2 control-label">Phone<span class="red-fonts">*</span></label>
+                <div class="col-sm-8">
+                    <input id="phone" name="phone" value="{{ result.phone }}" placeholder="phone" class="form-control">
+                </div>
+            </div><!--mobile-->
+            <div class="hr-line-dashed"></div>
+            <div class="form-group">
+                <label for="email" class="col-sm-2 control-label">Email<span class="red-fonts">*</span></label>
+                <div class="col-sm-8">
+                    <input id="email" name="email" value="{{ result.email}}" type="email" placeholder="Email" class="form-control">
+                </div>
+            </div><!--Email-->
+            <div class="hr-line-dashed"></div>
+            <div class="form-group">
+            <label for="role" class="col-sm-2 control-label">角色<span class="red-fonts">*</span></label>
+                <div class="col-sm-8">
+                    <div class="col-sm-4">
+                       <div class="radio i-checks">
+				{% if result.role == 1 %}
+                            <label><input type="radio" value="1"  name="role" checked >普通用户</label>
+				{% endif %}
+                       </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="radio i-checks">
+                            <label> 
+				{% if result.role == 0 %}
+				<input type="radio" value="0"  name="role" checked>管理员
+				{% endif %}
+			    </label>
+                         </div> 
+                    </div>
+                </div> 
+            </div><!--role-->
+        <div class="hr-line-dashed"></div>
+        <div class="form-group">
+            <div class="modal-footer">
+                 <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" id="updatebtn">确认</button>
+            </div>
+        </div> <!--button-->
+        </form> <!--form-->
+      </div> <!--modal-body-->
+
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal --> 
+
+<!--添加用户态窗-->
+<div class="modal fade"  id ="adduserModal">   
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title">添加用户信息</h4> 
+      </div>
+      <div class="modal-body">
+        <p hidden id="uperrorMsg" class="text-danger" style="color:red"></p> <!-- for error msg-->
+            <form id="adduserForm" class="form-horizontal nice-validator n-yellow" novalidate="novalidate">
+            <!-- <input type="hidden" id='upid' name="id">--><!--update need id-->
+            <div class="form-group">
+                <label for="username" class="col-sm-2 control-label">用户名<span class="red-fonts">*</span></label>
+                <div class="col-sm-8">
+                    <input id="name" name="username"  placeholder="Username" type="text" class="form-control" aria-required="true" data-tip="输入用户名">
+                </div>
+            </div><!--username-->
+            <div class="hr-line-dashed"></div>
+            <div class="form-group">
+                <label for="age" class="col-sm-2 control-label">密码<span class="red-fonts">*</span></label>
+                <div class="col-sm-8">
+                    <input id="password" name="password" type="password" placeholder="password" class="form-control" data-tip="密码">
+                </div> 
+            </div><!--password-->
+            <div class="hr-line-dashed"></div>
+            <div class="form-group">
+                <label for="age" class="col-sm-2 control-label">年龄<span class="red-fonts">*</span></label>
+                <div class="col-sm-8">
+                    <input id="age" name="age"  placeholder="age" class="form-control" data-tip="年龄">
+                </div> 
+            </div><!--age-->
+            <div class="hr-line-dashed"></div>
+            <div class="form-group">
+                <label for="phone" class="col-sm-2 control-label">Phone<span class="red-fonts">*</span></label>
+                <div class="col-sm-8">
+                    <input id="phone" name="phone"  placeholder="phone" class="form-control">
+                </div>
+            </div><!--mobile-->
+            <div class="hr-line-dashed"></div>
+            <div class="form-group">
+                <label for="email" class="col-sm-2 control-label">Email<span class="red-fonts">*</span></label>
+                <div class="col-sm-8">
+                    <input id="email" name="email" type="email" placeholder="Email" class="form-control">
+                </div>
+            </div><!--Email-->
+            <div class="hr-line-dashed"></div>
+            <div class="form-group">
+            <label for="role" class="col-sm-2 control-label">角色<span class="red-fonts">*</span></label>
+                <div class="col-sm-8">
+                    <div class="col-sm-4">
+                        <div class="radio i-checks">
+                            <label><input type="radio" value="1"  name="role" >普通用户</label>
+                        </div> 
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="radio i-checks">
+                            <label><input type="radio" value="0"  name="role">管理员</label>
+                         </div> 
+                    </div>
+                </div> 
+            </div><!--role-->
+        <div class="hr-line-dashed"></div>
+        <div class="form-group">
+            <div class="modal-footer">
+                 <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" id="adduserbtn">确认</button>
+            </div>
+        </div> <!--button-->
+        </form> <!--adduserform-->
+      </div> <!--modal-body-->
+
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal --> 
+
+<script>
+$(document).ready(function(){
+$('#editable').DataTable({
+        "bStateSave":true,
+        "bFilter":true,
+        "bDestroy":true, //加上这个，一旦datatable的数据有增加或者删除，会销毁原有的，重新获取
+        "order":[[1,"asc"]],//排序
+        "language": {
+                "lengthMenu": "每页 _MENU_ 条记录",
+                "zeroRecords": "没有找到记录",
+                "sInfo": "第 _PAGE_ 页 ( 总共 _PAGES_ 页 ),显示第 _START_ 至 _END_ 项(总共 _TOTAL_ 项)",
+                "infoEmpty": "无记录",
+                "infoFiltered": "(从 _MAX_ 条记录过滤)",
+                "sSearch": "搜索:",
+                "oPaginate": {
+                "sFirst": "首页",
+                "sPrevious": "上一页",
+                "sNext": "下一页",
+                "sLast": "末页"
+                } 
+        },
+   });
+});
+
+// 点击更新按钮，获取id，从逻辑端查出对应的数据，弹出模态窗渲染数据
+$(".update").click(function(){   
+    $('#updateModal').modal('show')
+    var id=$(this).attr("data-id")
+    $.getJSON("/userinfo/",{'id':id},function(result){
+            console.log(result);
+            $("#id").val(result["id"]);
+            $("#username").val(result["username"]);
+            $("#age").val(result["age"]);
+            $("#phone").val(result["phone"]);
+            $("#email").val(result["email"]);
+            $('#updateModal').modal('show')
+        })
+})
+
+// 更新数据
+$("#updatebtn").click(function(){
+$.post("/update/",$("#updateForm").serialize(),function(result) {
+    data=JSON.parse(result)
+    if(data["code"]==0){
+		swal({ 
+                        title: "更新成功", 
+                        text: data['result'],   
+                        type: "success",   
+                        confirmButtonText: "确定"                                                                                     },function(){               
+                         location.href="/userlist/"
+                         location.reload()
+                        });
+    		}else{
+ 			swal("MY GOD","update error","error");
+    		}
+    	})
+    	return false;
+})
+//添加用户模态窗
+$("#adduser").on('click',function(){
+    $('#adduserModal').modal('show')  
+})
+// 添加用户 
+$("#adduserbtn").click(function(){
+     var str = $('#adduserForm').serialize()
+           console.log(str)
+      $.post("/adduser/",str,function(result){
+           console.log(result)
+           data=JSON.parse(result)
+           console.log(data)
+           if (data['code']==0){
+                swal({ 
+                title: "添加成功", 
+                text: data['result'],   
+                type: "success",   
+	        confirmButtonText: "确定"                                                                                      },function(){               
+                location.href="/userlist/"
+              });
+                }else{ 
+                        swal("MY GOD",data['errmsg'],"error");
+                }
+              }); 
+                return false
+        });  
+
+/*删除用户*/
+$(".del").click(function(){
+	if(confirm("是否确认删除？")){
+                var id = $(this).attr('data-id')
+		console.log(id)
+        var url = "/delete?id="+id
+	$.getJSON(url,function(data){
+          	if (data['code']==0){
+          	  	swal({ 
+                	title: "删除成功", 
+                	text: data['result'],   
+                	type: "success",   
+                	confirmButtonText: "确定"                                                                                      },function(){               
+                 	 location.href="/userlist/"
+			 location.reload()
+              		});
+          	}else{ 
+            		swal("MY GOD",data['errmsg'],"error");
+             	}
+     	})	
+	}
+})   
+</script>
+
+{% endblock%}
+<!--引用面包导航模板添加下面面包导航内容-->
+</body></html>
